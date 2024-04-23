@@ -91,28 +91,31 @@ std::vector<hardware_interface::StateInterface> RobotiqFTSensorHardware::export_
 
 void RobotiqFTSensorHardware::read_background()
 {
-  ret_ = sensor_state_machine();
-  if (ret_ == -1)
+  if (!use_fake_mode_)
   {
-    wait_for_other_connection();
-  }
-
-  if (rq_sensor_get_current_state() == RQ_STATE_RUN)
-  {
-    strcpy(bufStream_, "");
-    // auto msgStream = get_data();
-
-    if (rq_state_got_new_message())
+    ret_ = sensor_state_machine();
+    if (ret_ == -1)
     {
-      std::array<double, 6> sensor_reading_background{};
-      sensor_reading_background[0] = rq_state_get_received_data(0);
-      sensor_reading_background[1] = rq_state_get_received_data(1);
-      sensor_reading_background[2] = rq_state_get_received_data(2);
-      sensor_reading_background[3] = rq_state_get_received_data(3);
-      sensor_reading_background[4] = rq_state_get_received_data(4);
-      sensor_reading_background[5] = rq_state_get_received_data(5);
+      wait_for_other_connection();
+    }
 
-      sensor_readings_.writeFromNonRT(sensor_reading_background);
+    if (rq_sensor_get_current_state() == RQ_STATE_RUN)
+    {
+      strcpy(bufStream_, "");
+      // auto msgStream = get_data();
+
+      if (rq_state_got_new_message())
+      {
+        std::array<double, 6> sensor_reading_background{};
+        sensor_reading_background[0] = rq_state_get_received_data(0);
+        sensor_reading_background[1] = rq_state_get_received_data(1);
+        sensor_reading_background[2] = rq_state_get_received_data(2);
+        sensor_reading_background[3] = rq_state_get_received_data(3);
+        sensor_reading_background[4] = rq_state_get_received_data(4);
+        sensor_reading_background[5] = rq_state_get_received_data(5);
+
+        sensor_readings_.writeFromNonRT(sensor_reading_background);
+      }
     }
   }
 }
